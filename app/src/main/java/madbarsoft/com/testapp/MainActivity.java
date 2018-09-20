@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     String currentVersion, latestVersion;
-    Dialog dialog;
     Button btnSecondPage;
 
     @Override
@@ -38,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
                 latestVersion = new GetLatestVersion().execute().get();
                 if(!currentVersion.equals(latestVersion)){
                     final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("More content has added !\nPlease update...");
+                    builder.setTitle("Please...\n"+"Cv"+currentVersion+"Lv:"+latestVersion);
                     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //Click button action
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=madbarsoft.com.testapp")));
+                           // startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=madbarsoft.com.testapp")));
                             dialog.dismiss();
                         }
                     });
@@ -107,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
                 Element element = doc.getElementsByClass("BgcNfc").get(3);
                 latestVersion = element.parent().children().get(1).children().text();
             } catch (Exception e) {
-                latestVersion = currentVersion;
+               // latestVersion = currentVersion;
+                e.printStackTrace();
+             //   System.out.println("============================================== Version load Error =============================================");
             }
             return latestVersion;
         }
