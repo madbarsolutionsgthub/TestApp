@@ -31,34 +31,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getCurrentVersion();
         if(isOnline()) {
-            try {
-                latestVersion = new GetLatestVersion().execute().get();
-                if(!currentVersion.equals(latestVersion)){
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Please...\n"+"Cv"+currentVersion+"Lv:"+latestVersion);
-                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //Click button action
-                           // startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=madbarsoft.com.testapp")));
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.setCancelable(false);
-                    builder.show();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            forceUpdate();
         }
-
-        Toast.makeText(this, "Cur: "+currentVersion+" Latest: "+latestVersion, Toast.LENGTH_SHORT).show();
-
-
         btnSecondPage = findViewById(R.id.btnSecondPage);
         btnSecondPage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,19 +45,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void getCurrentVersion(){
-        PackageManager pm = this.getPackageManager();
-        PackageInfo pInfo = null;
-
+    public void forceUpdate(){
+        PackageManager packageManager = this.getPackageManager();
+        PackageInfo packageInfo = null;
         try {
-            pInfo =  pm.getPackageInfo(this.getPackageName(),0);
-
-        } catch (PackageManager.NameNotFoundException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            packageInfo =packageManager.getPackageInfo(getPackageName(),0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
         }
-        currentVersion = pInfo.versionName;
-
+        String currentVersion = packageInfo.versionName;
+        new UpdateAsync(currentVersion,MainActivity.this).execute();
     }
     public boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -91,26 +63,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else {
             return false;
-        }
-    }
-    private class GetLatestVersion extends AsyncTask<String, String, String> {
-        String latestVersion;
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                Document doc = Jsoup.connect("https://play.google.com/store/apps/details?id=madbarsoft.com.testapp").get();
-                Element element = doc.getElementsByClass("BgcNfc").get(3);
-                latestVersion = element.parent().children().get(1).children().text();
-            } catch (Exception e) {
-               // latestVersion = currentVersion;
-                e.printStackTrace();
-             //   System.out.println("============================================== Version load Error =============================================");
-            }
-            return latestVersion;
         }
     }
 
