@@ -6,8 +6,8 @@ android {
         applicationId "madbarsoft.com.testapp"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 7
-        versionName "7.0"
+        versionCode 8
+        versionName "8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
